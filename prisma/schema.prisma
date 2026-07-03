@@ -1,0 +1,187 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  COACH
+  ADMIN
+}
+
+enum BookingStatus {
+  SCHEDULED
+  RESCHEDULED
+  COMPLETED
+  NO_SHOW
+}
+
+enum GoalType {
+  WEIGHT
+  FREEFORM
+}
+
+enum MealType {
+  BREAKFAST
+  LUNCH
+  DINNER
+  SNACK
+}
+
+model User {
+  id               Int      @id @default(autoincrement())
+  email            String   @unique
+  passwordHash     String
+  fullName         String
+  role             Role     @default(STUDENT)
+  remainingCredits Int      @default(0)
+  startDate        DateTime?
+  createdAt        DateTime @default(now())
+
+  // Student side
+  bookings         Booking[]        @relation("StudentBookings")
+  bodyStats        BodyStat[]       @relation("StudentBodyStats")
+  goals            Goal[]           @relation("StudentGoals")
+  workoutEntries   WorkoutEntry[]   @relation("StudentWorkouts")
+  nutritionEntries NutritionEntry[] @relation("StudentNutrition")
+  waterEntries     WaterEntry[]     @relation("StudentWater")
+
+  // Coach side
+  coachBookings       Booking[]              @relation("CoachBookings")
+  availability        Availability[]
+  availabilityOverrides AvailabilityOverride[]
+  loggedBodyStats      BodyStat[]             @relation("LoggedBodyStats")
+  createdGoals         Goal[]                 @relation("CreatedGoals")
+  loggedWorkouts       WorkoutEntry[]         @relation("LoggedWorkouts")
+  loggedNutrition      NutritionEntry[]       @relation("LoggedNutrition")
+  loggedWater          WaterEntry[]           @relation("LoggedWater")
+}
+
+model NutritionEntry {
+  id         Int      @id @default(autoincrement())
+  student    User     @relation("StudentNutrition", fields: [studentId], references: [id])
+  studentId  Int
+  loggedBy   User     @relation("LoggedNutrition", fields: [loggedById], references: [id])
+  loggedById Int
+  mealType   MealType @default(SNACK)
+  food       String
+  calories   Int
+  protein    Float?
+  carbs      Float?
+  fat        Float?
+  recordedAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  @@index([studentId, recordedAt])
+}
+
+model WaterEntry {
+  id         Int      @id @default(autoincrement())
+  student    User     @relation("StudentWater", fields: [studentId], references: [id])
+  studentId  Int
+  loggedBy   User     @relation("LoggedWater", fields: [loggedById], references: [id])
+  loggedById Int
+  ounces     Int
+  recordedAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  @@index([studentId, recordedAt])
+}
+
+model WorkoutEntry {
+  id         Int      @id @default(autoincrement())
+  student    User     @relation("StudentWorkouts", fields: [studentId], references: [id])
+  studentId  Int
+  loggedBy   User     @relation("LoggedWorkouts", fields: [loggedById], references: [id])
+  loggedById Int
+  exercise   String
+  sets       Int
+  reps       Int
+  weight     Float?
+  recordedAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  @@index([studentId, recordedAt])
+}
+
+model Goal {
+  id              Int       @id @default(autoincrement())
+  student         User      @relation("StudentGoals", fields: [studentId], references: [id])
+  studentId       Int
+  createdBy       User      @relation("CreatedGoals", fields: [createdById], references: [id])
+  createdById     Int
+  type            GoalType
+  title           String
+  targetWeight    Float?
+  startingWeight  Float?
+  targetDate      DateTime?
+  completed       Boolean   @default(false)
+  completedAt     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([studentId])
+}
+
+model BodyStat {
+  id         Int      @id @default(autoincrement())
+  student    User     @relation("StudentBodyStats", fields: [studentId], references: [id])
+  studentId  Int
+  weight     Float
+  loggedBy   User     @relation("LoggedBodyStats", fields: [loggedById], references: [id])
+  loggedById Int
+  recordedAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  @@index([studentId, recordedAt])
+}
+
+model Availability {
+  id        Int      @id @default(autoincrement())
+  coach     User     @relation(fields: [coachId], references: [id])
+  coachId   Int
+  dayOfWeek Int // 0 = Sunday ... 6 = Saturday
+  startTime String // "09:00"
+  endTime   String // "17:00"
+  createdAt DateTime @default(now())
+
+  @@unique([coachId, dayOfWeek, startTime, endTime])
+}
+
+// Per-date exception to the coach's recurring weekly Availability.
+// Presence of a row for (coachId, date) means that date no longer follows
+// the weekly pattern — `hours` is the full list of available hour-of-day
+// values for that date (an empty array means the coach is closed all day).
+model AvailabilityOverride {
+  id        Int      @id @default(autoincrement())
+  coach     User     @relation(fields: [coachId], references: [id])
+  coachId   Int
+  date      DateTime // local midnight for the overridden calendar date
+  hours     Int[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([coachId, date])
+}
+
+model Booking {
+  id            Int           @id @default(autoincrement())
+  student       User          @relation("StudentBookings", fields: [studentId], references: [id])
+  studentId     Int
+  coach         User          @relation("CoachBookings", fields: [coachId], references: [id])
+  coachId       Int
+  sessionTime   DateTime
+  status        BookingStatus @default(SCHEDULED)
+  coachNotes    String?
+  reminderSent  Boolean       @default(false)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([coachId, sessionTime])
+  @@index([studentId])
+  @@index([status, reminderSent, sessionTime])
+}

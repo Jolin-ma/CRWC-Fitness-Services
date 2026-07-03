@@ -1,0 +1,30 @@
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --font-editorial: "Fraunces", ui-serif, Georgia, serif;
+
+  /* College brand palette — editorial theme used across the app */
+  --color-brand-green: #0b8261;
+  --color-brand-green-dark: #086b4f;
+  --color-brand-green-soft: #e4f0ec;
+  --color-brand-ink: #3e2b2f;
+  --color-brand-paper: #f2f5f3;
+  --color-brand-red: #7a2e2a;
+  --color-brand-red-dark: #632421;
+  --color-brand-red-soft: #f4e6e5;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background-color: var(--color-brand-paper);
+  color: var(--color-brand-ink);
+}
+
+::selection {
+  background: var(--color-brand-green-soft);
+}
