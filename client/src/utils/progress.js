@@ -35,22 +35,8 @@ export function computeStreakWeeks(bookings) {
 }
 
 const SESSION_MILESTONES = [1, 5, 10, 15, 20];
-const TENURE_MILESTONES = [
-  { months: 1, label: "1 month in" },
-  { months: 3, label: "3 months in" },
-  { months: 6, label: "6 months in" },
-  { months: 12, label: "1 year in" },
-];
 
-function monthsSince(startDate) {
-  const start = new Date(startDate);
-  const now = new Date();
-  let months = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
-  if (now.getDate() < start.getDate()) months -= 1;
-  return Math.max(0, months);
-}
-
-export function computeMilestones(bookings, startDate) {
+export function computeMilestones(bookings) {
   const completedCount = bookings.filter((b) => b.status === "COMPLETED").length;
 
   const sessionMilestones = SESSION_MILESTONES.map((n) => ({
@@ -59,13 +45,5 @@ export function computeMilestones(bookings, startDate) {
     achieved: completedCount >= n,
   }));
 
-  const tenureMilestones = startDate
-    ? TENURE_MILESTONES.map((m) => ({
-        id: `tenure-${m.months}`,
-        label: m.label,
-        achieved: monthsSince(startDate) >= m.months,
-      }))
-    : [];
-
-  return { sessionMilestones, tenureMilestones, completedCount };
+  return { sessionMilestones, completedCount };
 }

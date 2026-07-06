@@ -15,10 +15,7 @@ export default function ProgressPage() {
   }, []);
 
   const streakWeeks = computeStreakWeeks(bookings);
-  const { sessionMilestones, tenureMilestones, completedCount } = computeMilestones(
-    bookings,
-    user?.startDate,
-  );
+  const { sessionMilestones, completedCount } = computeMilestones(bookings);
   const notes = bookings
     .filter((b) => b.status === "COMPLETED" && b.coachNotes)
     .sort((a, b) => new Date(b.sessionTime) - new Date(a.sessionTime));
@@ -49,7 +46,7 @@ export default function ProgressPage() {
         <p className="mt-1 text-xs text-brand-ink/45">Keep booking sessions to unlock the next one.</p>
 
         <div className="mt-4 grid grid-cols-3 gap-3">
-          {[...sessionMilestones, ...tenureMilestones].map((m) => (
+          {sessionMilestones.map((m) => (
             <div
               key={m.id}
               className={`border p-4 text-center ${

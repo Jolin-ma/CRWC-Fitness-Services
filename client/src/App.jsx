@@ -4,9 +4,6 @@ import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import StudentDashboard from "./pages/StudentDashboard.jsx";
 import ProgressPage from "./pages/ProgressPage.jsx";
-import BodyGoalsPage from "./pages/BodyGoalsPage.jsx";
-import WorkoutLogPage from "./pages/WorkoutLogPage.jsx";
-import NutritionLogPage from "./pages/NutritionLogPage.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 import ClientHistoryPage from "./pages/ClientHistoryPage.jsx";
 import AdminCyclesPage from "./pages/AdminCyclesPage.jsx";
@@ -41,30 +38,6 @@ export default function App() {
         element={
           <ProtectedRoute roles={["STUDENT"]}>
             <ProgressPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/student/body-goals"
-        element={
-          <ProtectedRoute roles={["STUDENT"]}>
-            <BodyGoalsPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/student/workouts"
-        element={
-          <ProtectedRoute roles={["STUDENT"]}>
-            <WorkoutLogPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/student/nutrition"
-        element={
-          <ProtectedRoute roles={["STUDENT"]}>
-            <NutritionLogPage />
           </ProtectedRoute>
         }
       />

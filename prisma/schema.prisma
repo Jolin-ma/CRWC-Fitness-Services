@@ -20,18 +20,6 @@ enum BookingStatus {
   NO_SHOW
 }
 
-enum GoalType {
-  WEIGHT
-  FREEFORM
-}
-
-enum MealType {
-  BREAKFAST
-  LUNCH
-  DINNER
-  SNACK
-}
-
 model User {
   id               Int      @id @default(autoincrement())
   email            String   @unique
@@ -44,100 +32,11 @@ model User {
 
   // Student side
   bookings         Booking[]        @relation("StudentBookings")
-  bodyStats        BodyStat[]       @relation("StudentBodyStats")
-  goals            Goal[]           @relation("StudentGoals")
-  workoutEntries   WorkoutEntry[]   @relation("StudentWorkouts")
-  nutritionEntries NutritionEntry[] @relation("StudentNutrition")
-  waterEntries     WaterEntry[]     @relation("StudentWater")
 
   // Coach side
   coachBookings       Booking[]              @relation("CoachBookings")
   availability        Availability[]
   availabilityOverrides AvailabilityOverride[]
-  loggedBodyStats      BodyStat[]             @relation("LoggedBodyStats")
-  createdGoals         Goal[]                 @relation("CreatedGoals")
-  loggedWorkouts       WorkoutEntry[]         @relation("LoggedWorkouts")
-  loggedNutrition      NutritionEntry[]       @relation("LoggedNutrition")
-  loggedWater          WaterEntry[]           @relation("LoggedWater")
-}
-
-model NutritionEntry {
-  id         Int      @id @default(autoincrement())
-  student    User     @relation("StudentNutrition", fields: [studentId], references: [id])
-  studentId  Int
-  loggedBy   User     @relation("LoggedNutrition", fields: [loggedById], references: [id])
-  loggedById Int
-  mealType   MealType @default(SNACK)
-  food       String
-  calories   Int
-  protein    Float?
-  carbs      Float?
-  fat        Float?
-  recordedAt DateTime @default(now())
-  createdAt  DateTime @default(now())
-
-  @@index([studentId, recordedAt])
-}
-
-model WaterEntry {
-  id         Int      @id @default(autoincrement())
-  student    User     @relation("StudentWater", fields: [studentId], references: [id])
-  studentId  Int
-  loggedBy   User     @relation("LoggedWater", fields: [loggedById], references: [id])
-  loggedById Int
-  ounces     Int
-  recordedAt DateTime @default(now())
-  createdAt  DateTime @default(now())
-
-  @@index([studentId, recordedAt])
-}
-
-model WorkoutEntry {
-  id         Int      @id @default(autoincrement())
-  student    User     @relation("StudentWorkouts", fields: [studentId], references: [id])
-  studentId  Int
-  loggedBy   User     @relation("LoggedWorkouts", fields: [loggedById], references: [id])
-  loggedById Int
-  exercise   String
-  sets       Int
-  reps       Int
-  weight     Float?
-  recordedAt DateTime @default(now())
-  createdAt  DateTime @default(now())
-
-  @@index([studentId, recordedAt])
-}
-
-model Goal {
-  id              Int       @id @default(autoincrement())
-  student         User      @relation("StudentGoals", fields: [studentId], references: [id])
-  studentId       Int
-  createdBy       User      @relation("CreatedGoals", fields: [createdById], references: [id])
-  createdById     Int
-  type            GoalType
-  title           String
-  targetWeight    Float?
-  startingWeight  Float?
-  targetDate      DateTime?
-  completed       Boolean   @default(false)
-  completedAt     DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-
-  @@index([studentId])
-}
-
-model BodyStat {
-  id         Int      @id @default(autoincrement())
-  student    User     @relation("StudentBodyStats", fields: [studentId], references: [id])
-  studentId  Int
-  weight     Float
-  loggedBy   User     @relation("LoggedBodyStats", fields: [loggedById], references: [id])
-  loggedById Int
-  recordedAt DateTime @default(now())
-  createdAt  DateTime @default(now())
-
-  @@index([studentId, recordedAt])
 }
 
 model Availability {

@@ -1,13 +1,10 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-  AppleIcon,
   CalendarIcon,
   ClipboardIcon,
-  DumbbellIcon,
   FolderIcon,
   GridIcon,
   LogoutIcon,
-  TargetIcon,
   TrendIcon,
 } from "./icons.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
@@ -16,9 +13,6 @@ const NAV_BY_ROLE = {
   STUDENT: [
     { label: "Book sessions", Icon: CalendarIcon, to: "/student" },
     { label: "My progress", Icon: TrendIcon, to: "/student/progress" },
-    { label: "Body & goals", Icon: TargetIcon, to: "/student/body-goals" },
-    { label: "Workout log", Icon: DumbbellIcon, to: "/student/workouts" },
-    { label: "Nutrition", Icon: AppleIcon, to: "/student/nutrition" },
   ],
   COACH: [{ label: "My schedule", Icon: ClipboardIcon, to: "/coach" }],
   ADMIN: [
